@@ -1,42 +1,51 @@
+import React, { useContext } from "react"
 import { Link } from "gatsby"
-import PropTypes from "prop-types"
-import React from "react"
+import {
+  AlternateLinksContext,
+  LanguageContext,
+} from "./hocs/withLanguageContext"
+import { capitalizeLetter } from "../lib/helpers"
 
-const Header = ({ siteTitle }) => (
-  <header
-    style={{
-      background: `rebeccapurple`,
-      marginBottom: `1.45rem`,
-    }}
-  >
-    <div
-      style={{
-        margin: `0 auto`,
-        maxWidth: 960,
-        padding: `1.45rem 1.0875rem`,
-      }}
-    >
-      <h1 style={{ margin: 0 }}>
-        <Link
-          to="/"
-          style={{
-            color: `white`,
-            textDecoration: `none`,
-          }}
-        >
-          {siteTitle}
-        </Link>
+// import useSiteLinks from "./Hooks/use-site-links"
+
+const Header = ({ siteTitle }) => {
+  const alternateLinks = useContext(AlternateLinksContext) || []
+  const language = useContext(LanguageContext) || "pl"
+  // const links = useSiteLinks()
+
+  return (
+    <div>
+      <h1>
+        <Link to="/">{siteTitle}</Link>
       </h1>
+      {/* <nav>
+        <ul>{links.map(renderLink(language))}</ul>
+      </nav> */}
+      <div>
+        <ul>{alternateLinks.map(renderLangLink)}</ul>
+      </div>
     </div>
-  </header>
-)
-
-Header.propTypes = {
-  siteTitle: PropTypes.string,
-}
-
-Header.defaultProps = {
-  siteTitle: ``,
+  )
 }
 
 export default Header
+
+function renderLangLink(link, i) {
+  return (
+    <li key={i}>
+      <Link to={link.path} hrefLang={link.language}>
+        {link.language}
+      </Link>
+    </li>
+  )
+}
+
+function renderLink(language) {
+  return (link, index) => (
+    <li key={index}>
+      <Link to={link[language].path}>
+        {capitalizeLetter(link[language].title)}
+      </Link>
+    </li>
+  )
+}
