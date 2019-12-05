@@ -10,11 +10,15 @@ module.exports = {
     `gatsby-plugin-react-helmet`,
     {
       resolve: `server-api`,
-      options: { apiUrl: process.env.CATEGORY_URL, nodeType: "Category" },
-    },
-    {
-      resolve: `server-api`,
-      options: { apiUrl: process.env.PRODUCT_URL, nodeType: "Product" },
+      options: {
+        sources: [
+          { url: process.env.CATEGORY_URL, nodeType: "Category" },
+          {
+            url: process.env.PRODUCT_URL,
+            nodeType: "Product",
+          },
+        ],
+      },
     },
     {
       resolve: `gatsby-source-filesystem`,

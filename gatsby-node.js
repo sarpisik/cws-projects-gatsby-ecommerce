@@ -7,6 +7,14 @@
 // You can delete this file if you're not using it
 const path = require("path")
 const { mapEdgesToNodes } = require("./src/lib/helpers")
+const categorySubPrefixes = {
+  pl: "kategoria",
+  en: "category",
+}
+const productSubPrefixes = {
+  pl: "produkt",
+  en: "product",
+}
 
 exports.createPages = async ({
   graphql,
@@ -56,10 +64,7 @@ exports.createPages = async ({
     buildPages(
       {
         edges: categories,
-        subPrefixes: {
-          pl: "kategoria",
-          en: "category",
-        },
+        subPrefixes: categorySubPrefixes,
         template: path.resolve(`src/templates/category.js`),
       },
       createPage
@@ -92,10 +97,7 @@ exports.createPages = async ({
     buildPages(
       {
         edges: products,
-        subPrefixes: {
-          pl: "produkt",
-          en: "product",
-        },
+        subPrefixes: productSubPrefixes,
         template: path.resolve(`src/templates/product.js`),
       },
       createPage
@@ -103,6 +105,28 @@ exports.createPages = async ({
   } catch (error) {
     throw new Error(error)
   }
+}
+
+exports.onCreatePage = ({ page, actions: { createPage, deletePage } }) => {
+  if (page.path !== "/") return
+
+  deletePage(page)
+
+  const pathPrefixes = {
+    pl: "/",
+    en: "/en/",
+  }
+
+  const pages = Object.keys(pathPrefixes).map(language => {
+    const path = pathPrefixes[language]
+    return {
+      ...page,
+      context: { language, categorySubPrefixes },
+      path,
+    }
+  })
+
+  createPages(pages, createPage)
 }
 
 exports.createResolvers = ({ createResolvers }) => {
@@ -117,7 +141,15 @@ exports.createResolvers = ({ createResolvers }) => {
   }
   createResolvers({
     CategoryName: translator,
+    CategorySlug: translator,
     ProductName: translator,
+    ProductCategory: translator,
+    ProductDescription: translator,
+    ProductPriceBrut: translator,
+    ProductPriceNet: translator,
+    ProductSalePriceBrut: translator,
+    ProductSalePriceNet: translator,
+    ProductSlug: translator,
   })
 }
 
@@ -125,7 +157,7 @@ function buildPages({ edges, subPrefixes, template }, createPage) {
   const nodes = mapEdgesToNodes(edges)
   for (const node of nodes) {
     const languages = Object.keys(node.name)
-    buildMultiLangPages(
+    setMultiLangPages(
       languages,
       node,
       pageResolver(template, subPrefixes),
@@ -134,13 +166,16 @@ function buildPages({ edges, subPrefixes, template }, createPage) {
   }
 }
 
-const buildMultiLangPages = (languages, node, pageResolver, createPage) => {
+function setMultiLangPages(languages, node, pageResolver, createPage) {
   const pages = languages.map(language => {
     const page = pageResolver(node, language)
     page.context.language = language
     return page
   })
+  createPages(pages, createPage)
+}
 
+function createPages(pages, createPage) {
   const alternateLinks = pages.map(({ path, context: { language } }) => ({
     language,
     path,
