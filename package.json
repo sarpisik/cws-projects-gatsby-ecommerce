@@ -10,6 +10,7 @@
     "gatsby-plugin-manifest": "2.2.30",
     "gatsby-plugin-offline": "3.0.24",
     "gatsby-plugin-react-helmet": "3.1.16",
+    "gatsby-plugin-s3": "^0.3.2",
     "gatsby-plugin-sharp": "2.3.4",
     "gatsby-source-filesystem": "2.1.39",
     "gatsby-transformer-sharp": "2.3.6",
@@ -34,7 +35,8 @@
     "start": "npm run develop",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
+    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1",
+    "deploy": "npm run build && gatsby-plugin-s3 deploy"
   },
   "repository": {
     "type": "git",
