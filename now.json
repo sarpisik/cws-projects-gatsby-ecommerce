@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "name": "cws-ecommerce-client-app",
+  "build": {
+    "env": {
+      "CATEGORY_URL": "@cws-ecommerce-client-category-url",
+      "PRODUCT_URL": "@cws-ecommerce-client-product-url"
+    }
+  },
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@now/static-build",
+      "config": {
+        "distDir": "public"
+      }
+    }
+  ]
+}
